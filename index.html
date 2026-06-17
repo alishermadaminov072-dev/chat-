@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Clone</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Chat list -->
+    <div class="sidebar">
+      <div class="header">
+        <h2>Telegram</h2>
+        <i class="fas fa-search"></i>
+      </div>
+      <div class="chat-list">
+        <div class="chat-item active" onclick="openChat(0)">
+          <img src="https://i.pravatar.cc/50?u=1" alt="">
+          <div>
+            <h4>Aziz</h4>
+            <p>Salom, qalaysiz?</p>
+          </div>
+        </div>
+        <div class="chat-item" onclick="openChat(1)">
+          <img src="https://i.pravatar.cc/50?u=2" alt="">
+          <div>
+            <h4>Bot</h4>
+            <p>Yangi xabar...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <h3 id="chat-name">Aziz</h3>
+      </div>
+      <div class="messages" id="messages">
+        <!-- Messages will appear here -->
+      </div>
+      <div class="input-area">
+        <input type="text" id="message-input" placeholder="Xabar yozing...">
+        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f1621;
+  color: white;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 350px;
+  background: #17212b;
+  border-right: 1px solid #2b3a4a;
+}
+
+.header {
+  padding: 15px;
+  background: #17212b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2b3a4a;
+}
+
+.chat-list {
+  overflow-y: auto;
+  height: calc(100vh - 60px);
+}
+
+.chat-item {
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chat-item:hover, .chat-item.active {
+  background: #2b3a4a;
+}
+
+.chat-item img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #0f1621;
+}
+
+.chat-header {
+  padding: 15px;
+  background: #17212b;
+  border-bottom: 1px solid #2b3a4a;
+}
+
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: url('https://i.imgur.com/4z3z3z3.jpg') repeat;
+  background-size: cover;
+}
+
+.message {
+  margin-bottom: 15px;
+  max-width: 70%;
+}
+
+.message.sent {
+  margin-left: auto;
+  text-align: right;
+}
+
+.message.sent .bubble {
+  background: #2481cc;
+  color: white;
+  border-radius: 15px 15px 5px 15px;
+}
+
+.message.received .bubble {
+  background: #2b3a4a;
+  border-radius: 15px 15px 15px 5px;
+}
+
+.bubble {
+  padding: 10px 15px;
+  display: inline-block;
+}
+
+.input-area {
+  padding: 10px;
+  background: #17212b;
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 25px;
+  background: #2b3a4a;
+  color: white;
+}
+
+button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #2481cc;
+  border: none;
+  color: white;
+  cursor: pointer;
+}let currentChat = 0;
+
+const chats = [
+  { name: "Aziz", messages: [] },
+  { name: "Bot", messages: [] }
+];
+
+function openChat(index) {
+  currentChat = index;
+  document.getElementById("chat-name").textContent = chats[index].name;
+  renderMessages();
+}
+
+function sendMessage() {
+  const input = document.getElementById("message-input");
+  const text = input.value.trim();
+  
+  if (text === "") return;
+
+  chats[currentChat].messages.push({
+    text: text,
+    sent: true
+  });
+
+  input.value = "";
+  renderMessages();
+
+  // Bot javobi (misol uchun)
+  setTimeout(() => {
+    chats[currentChat].messages.push({
+      text: "Bu test javobi. Salom!",
+      sent: false
+    });
+    renderMessages();
+  }, 800);
+}
+
+function renderMessages() {
+  const messagesDiv = document.getElementById("messages");
+  messagesDiv.innerHTML = "";
+
+  chats[currentChat].messages.forEach(msg => {
+    const div = document.createElement("div");
+    div.className = `message ${msg.sent ? 'sent' : 'received'}`;
+    div.innerHTML = `<div class="bubble">${msg.text}</div>`;
+    messagesDiv.appendChild(div);
+  });
+
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// Boshlang'ich xabar
+chats[0].messages = [
+  { text: "Salom! Bu mening birinchi Telegram klonim.", sent: false },
+  { text: "Juda zo'r bo'ldi!", sent: true }
+];
+
+openChat(0);
